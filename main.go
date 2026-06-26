@@ -31,5 +31,7 @@ func main() {
 		radarr.HandleEvent()
 	} else if sonarr.IsSonarr() {
 		sonarr.HandleEvent()
+	} else {
+		log.Errorf("unable to determine source")
 	}
 }
