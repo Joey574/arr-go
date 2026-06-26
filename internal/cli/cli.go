@@ -9,8 +9,8 @@ import (
 )
 
 type Args struct {
-	Log     string `long:"log" default:"/var/log/radarr/radarr-go.log" description:"specify the log path, an empty path will disable logging"`
-	Env     string `long:"env" default:"/etc/radarr/radarr.env" description:"specify the env file to source for creds"`
+	Log     string `long:"log" default:"/var/log/arr/arr-go.log" description:"specify the log path, an empty path will disable logging"`
+	Env     string `long:"env" default:"/etc/arr/arr.env" description:"specify the env file to source for creds"`
 	Version bool   `short:"v" long:"version" description:"print version and exit"`
 
 	TestQbitLogin bool `long:"test-qbit"`
