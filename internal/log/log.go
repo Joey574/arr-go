@@ -56,9 +56,9 @@ func Printf(format string, a ...any) {
 
 func logf(ltype, host, format string, a ...any) {
 	if host != "main.main" {
-		format = fmt.Sprintf("radarr-go: %s: [%s] %s\n", host, ltype, format)
+		format = fmt.Sprintf("arr-go: %s: [%s] %s\n", host, ltype, format)
 	} else {
-		format = fmt.Sprintf("radarr-go: [%s] %s\n", ltype, format)
+		format = fmt.Sprintf("arr-go: [%s] %s\n", ltype, format)
 	}
 
 	Printf(format, a...)
