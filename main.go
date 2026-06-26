@@ -27,11 +27,14 @@ func main() {
 		log.Errorf("sourcing env file '%s': '%v'", arg.Env, err)
 	}
 
+	err := log.AsError("unable to determine source")
 	if radarr.IsRadarr() {
-		radarr.HandleEvent()
+		err = radarr.HandleEvent()
 	} else if sonarr.IsSonarr() {
-		sonarr.HandleEvent()
-	} else {
-		log.Errorf("unable to determine source")
+		err = sonarr.HandleEvent()
+	}
+
+	if err != nil {
+		log.Fatalf("%v", err)
 	}
 }

@@ -23,7 +23,7 @@ func IsSonarr() bool {
 	return ok
 }
 
-func HandleEvent() {
+func HandleEvent() error {
 	eventType, ok := os.LookupEnv(_SONARR_EVENT_TYPE)
 	if !ok {
 		log.Errorf("env variable not defined '%s'", _SONARR_EVENT_TYPE)
@@ -32,44 +32,51 @@ func HandleEvent() {
 	switch eventType {
 	case _SONARR_TEST_EVENT:
 		log.Infof("test event recieved, exiting")
-		os.Exit(0)
+		return nil
 	case _SONARR_DOWNLOAD_EVENT:
 		log.Infof("download event recieved, calling handler")
-		handleDownload()
+		return handleDownload()
 	default:
-		log.Fatalf("unknown event recieved '%s', exiting", eventType)
+		return log.AsError("unknown event recieved '%s', exiting", eventType)
 	}
 }
 
-func handleDownload() {
+func handleDownload() error {
 	src, ok := os.LookupEnv(_SONARR_SRC_PATH)
 	if !ok {
-		log.Fatalf("env variable not defined '%s'", _SONARR_SRC_PATH)
+		return log.AsError("env variable not defined '%s'", _SONARR_SRC_PATH)
 	}
 
 	dst, ok := os.LookupEnv(_SONARR_DST_PATH)
 	if !ok {
-		log.Fatalf("env variable not defined '%s'", _SONARR_DST_PATH)
+		return log.AsError("env variable not defined '%s'", _SONARR_DST_PATH)
 	}
 
 	hash, ok := os.LookupEnv(_SONARR_DWN_ID)
 	if !ok {
-		log.Fatalf("env variable not defined '%s'", _SONARR_DWN_ID)
+		return log.AsError("env variable not defined '%s'", _SONARR_DWN_ID)
 	}
 	hash = strings.ToLower(hash)
 
 	log.Infof("recieved args: src='%s', dst='%s', id='%s'", src, dst, hash)
 
 	if err := fsu.Symlink(src, dst); err != nil {
-		log.Fatalf("failed to create symlink: %v", err)
+		return log.AsError("failed to create symlink: %v", err)
 	}
 
 	sid, err := qbit.Login()
 	if err != nil {
 		log.Errorf("failed to login to qbittorrent: %v", err)
+		return nil // symlink completed succefully, so we exit without error
 	}
 
 	if err = qbit.Recheck(sid, hash); err != nil {
 		log.Errorf("failed to recheck torrent: %v", err)
 	}
+
+	if err = qbit.AddTag(sid, hash, []string{"show"}); err != nil {
+		log.Errorf("failed to add tag: %v", err)
+	}
+
+	return nil
 }

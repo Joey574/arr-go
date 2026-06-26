@@ -106,6 +106,36 @@ func Recheck(sid, hash string) error {
 	return nil
 }
 
+func AddTag(sid, hash string, tags []string) error {
+	if sid == "" || hash == "" {
+		return fmt.Errorf("invalid arguments: sid='%s', hash='%s'", sid, hash)
+	}
+
+	body := url.Values{}
+	body.Set("hashes", hash)
+	body.Set("tags", strings.Join(tags, ","))
+
+	req, err := http.NewRequest(http.MethodPost, _QBIT_HOST+"/api/v2/torrents/addTags", strings.NewReader(body.Encode()))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.AddCookie(&http.Cookie{Name: "SID", Value: sid})
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("got status code '%d'", resp.StatusCode)
+	}
+
+	return nil
+}
+
 func Version(sid string) (string, error) {
 	req, err := http.NewRequest(http.MethodGet, _QBIT_HOST+"/api/v2/app/version", nil)
 	if err != nil {
