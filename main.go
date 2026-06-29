@@ -8,11 +8,20 @@ import (
 	"arr-go/v2/internal/sonarr"
 	"arr-go/v2/internal/test"
 	"os"
+
+	"github.com/jessevdk/go-flags"
 )
 
 func main() {
 	arg := cli.NewArgs()
-	arg.Parse()
+	_, err := arg.Parse()
+	if flags.WroteHelp(err) {
+		return
+	}
+
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
 
 	if arg.TestQbitLogin {
 		test.TestQbitLogin(arg)
@@ -27,7 +36,7 @@ func main() {
 		log.Errorf("sourcing env file '%s': '%v'", arg.Env, err)
 	}
 
-	err := log.AsError("unable to determine source")
+	err = log.AsError("unable to determine source")
 	if radarr.IsRadarr() {
 		err = radarr.HandleEvent()
 	} else if sonarr.IsSonarr() {
