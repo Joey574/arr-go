@@ -70,7 +70,7 @@ func sLogf(ltype, host, format string, a ...any) string {
 	}
 
 	if ltype != "" {
-		fm += fmt.Sprintf(" [%s]", ltype)
+		fm += fmt.Sprintf(" [%s] ", ltype)
 	}
 
 	return fm + fmt.Sprintf(format, a...)

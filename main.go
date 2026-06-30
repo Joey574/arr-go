@@ -2,10 +2,9 @@ package main
 
 import (
 	"arr-go/v2/internal/cli"
+	"arr-go/v2/internal/handlers"
 	"arr-go/v2/internal/log"
 	"arr-go/v2/internal/qbit"
-	"arr-go/v2/internal/radarr"
-	"arr-go/v2/internal/sonarr"
 	"arr-go/v2/internal/test"
 	"os"
 
@@ -28,22 +27,15 @@ func main() {
 		os.Exit(0)
 	}
 
-	if err := log.SetLogFile(arg.Log); err != nil {
+	if err = log.SetLogFile(arg.Log); err != nil {
 		log.Errorf("opening log file '%s': %v", arg.Log, err)
 	}
 
-	if err := qbit.SourceEnv(arg.Env); err != nil {
+	if err = qbit.SourceEnv(arg.Env); err != nil {
 		log.Errorf("sourcing env file '%s': '%v'", arg.Env, err)
 	}
 
-	err = log.AsError("unable to determine source")
-	if radarr.IsRadarr() {
-		err = radarr.HandleEvent()
-	} else if sonarr.IsSonarr() {
-		err = sonarr.HandleEvent()
-	}
-
-	if err != nil {
+	if err = handlers.HandleEvent(); err != nil {
 		log.Fatalf("%v", err)
 	}
 }
