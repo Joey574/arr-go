@@ -5,8 +5,6 @@ import (
 	"arr-go/v2/internal/handlers"
 	"arr-go/v2/internal/log"
 	"arr-go/v2/internal/qbit"
-	"arr-go/v2/internal/test"
-	"os"
 
 	"github.com/jessevdk/go-flags"
 )
@@ -22,20 +20,17 @@ func main() {
 		log.Fatalf("%v", err)
 	}
 
-	if arg.TestQbitLogin {
-		test.TestQbitLogin(arg)
-		os.Exit(0)
-	}
-
 	if err = log.SetLogFile(arg.Log); err != nil {
 		log.Errorf("opening log file '%s': %v", arg.Log, err)
 	}
 
-	if err = qbit.SourceEnv(arg.Env); err != nil {
+	qclient := qbit.NewClient(arg.Host)
+	if err = qclient.SourceEnv(arg.Env); err != nil {
 		log.Errorf("sourcing env file '%s': '%v'", arg.Env, err)
 	}
 
-	if err = handlers.HandleEvent(); err != nil {
+	handler := handlers.NewHandler(qclient)
+	if err = handler.HandleEvent(); err != nil {
 		log.Fatalf("%v", err)
 	}
 }

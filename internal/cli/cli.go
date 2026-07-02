@@ -9,11 +9,11 @@ import (
 )
 
 type Args struct {
-	Log     string `long:"log" default:"/var/log/arr/arr-go.log" description:"specify the log path, an empty path will disable logging"`
-	Env     string `long:"env" default:"/etc/arr/arr.env" description:"specify the env file to source for creds"`
-	Version bool   `short:"v" long:"version" description:"print version and exit"`
-
-	TestQbitLogin bool `long:"test-qbit"`
+	Log       string `long:"log" default:"/var/log/arr/arr-go.log" description:"specify the log path, an empty path will disable logging"`
+	Env       string `long:"env" default:"/etc/arr/arr.env" description:"specify the env file to source for creds"`
+	Host      string `long:"host" default:"http://localhost:8080" description:"qbit host to connect to"`
+	NoCleanup bool   `long:"no-cleanup" description:"skip clean up phase for media"`
+	Version   bool   `short:"v" long:"version" description:"print version and exit"`
 }
 
 func NewArgs() *Args {
